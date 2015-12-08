@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export MPD_HOST='/home/frozencemetery/.mpd/socket'
+export MPD_HOST='/run/mpd/socket'
 
 function lpad {
     word="$1"

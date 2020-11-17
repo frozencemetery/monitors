@@ -1,3 +1,8 @@
+# alsamonitor
+
+A simple volume monitor.  Unlike the builtin xmobar one, it doesn't poll but
+only updates when informed by alsa of changes.
+
 # mpdmonitor
 
 This is a script that I use with xmobar to control mpd.  It displays current

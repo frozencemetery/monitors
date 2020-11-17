@@ -1,3 +1,5 @@
+# mpdmonitor
+
 This is a script that I use with xmobar to control mpd.  It displays current
 track information in a pretty form for xmobar as its primary function.
 

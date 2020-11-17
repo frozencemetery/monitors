@@ -19,13 +19,17 @@ else
     string="<%disc%-%track% %artist%> - \"%title%\" #[%album%#]"
 fi
 
+cd /var/lib/mpd/music
 while true; do
     mpc current -f "${string}" | tr -d '\n'
     echo
 
     mpc idle >/dev/null
     if [ -z "$(mpc playlist)" ]; then
-        cd /var/lib/mpd/music; find . -maxdepth 2 -mindepth 2 -type d | cut -b 1-2 --complement | shuf | head -n1 | mpc --wait add
+        find . -maxdepth 2 -mindepth 2 -type d | \
+            cut -b 1-2 --complement | \
+            shuf -n1 | \
+            mpc --wait add
         mpc play
     fi
 done

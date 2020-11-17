@@ -21,11 +21,11 @@ fi
 
 while true; do
     mpc current -f "${string}" | tr -d '\n'
-    lpad "$(amixer get Master | tail -n 1 | awk '{print $4}' | sed -e 's/\[\|\]//g' -e 's/100/FF/g')" 3 0
+    echo
 
     mpc idle >/dev/null
     if [ -z "$(mpc playlist)" ]; then
-        cd /var/lib/mpd/music; find "$(find -maxdepth 1 -mindepth 1 -type d  | shuf | head -n1)" -maxdepth 1 -mindepth 1 -type d | cut -b 1-2 --complement | shuf | head -n1 | mpc --wait add
+        cd /var/lib/mpd/music; find . -maxdepth 2 -mindepth 2 -type d | cut -b 1-2 --complement | shuf | head -n1 | mpc --wait add
         mpc play
     fi
 done

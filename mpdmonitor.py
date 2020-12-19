@@ -9,8 +9,10 @@ MPD_HOST="/run/mpd/socket"
 
 os.chdir("/var/lib/mpd/music")
 
+albums = []
+artists = []
+
 def load() -> None:
-    albums = []
     artists = os.listdir()
     prune = []
     for artist in artists:
@@ -24,7 +26,11 @@ def load() -> None:
     for notartist in prune:
         artists.remove(notartist)
 
-def enqueue():
+def maybe_enqueue():
+    status = client.status()
+    if status["state"] != "stop":
+        return
+
     album = random.choice(albums)
     client.add(album)
     client.play()
@@ -41,10 +47,12 @@ load()
 client = MPDClient()
 client.connect(MPD_HOST)
 
+maybe_enqueue()
+
 print(current())
 while True:
-    events = client.idle(["database", "message"])
+    events = client.idle("database", "playlist")
     if "database" in events:
         load()
-    if "message" in events:
-        enqueue()
+    if "playlist" in events:
+        maybe_enqueue()

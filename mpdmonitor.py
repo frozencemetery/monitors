@@ -2,6 +2,7 @@
 
 import os
 import random
+import sys
 
 from mpd import MPDClient
 
@@ -35,24 +36,27 @@ def maybe_enqueue():
     client.add(album)
     client.play()
 
-def current() -> str:
+def current():
     d = client.currentsong()
     disc_track = f'<fc=#4186be>{d["disc"]}-{d["track"]}</fc>'
     artist = f'<fc=#71BEBE>{d["artist"]}</fc>'
     title = f'<fc=#FFF796>{d["title"]}</fc>'
     album = f'<fc=#CF6171>{d["album"]}</fc>'
-    return f'<{disc_track}> {artist} - "{title}" [{album}]'
+    s = f'<{disc_track}> {artist} - "{title}" [{album}]\n'
+    sys.stdout.write(s)
+    sys.stdout.flush()
 
 load()
 client = MPDClient()
 client.connect(MPD_HOST)
 
 maybe_enqueue()
+current()
 
-print(current())
 while True:
     events = client.idle("database", "playlist")
     if "database" in events:
         load()
     if "playlist" in events:
         maybe_enqueue()
+        current()

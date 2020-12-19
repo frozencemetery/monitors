@@ -4,30 +4,28 @@ import os
 import random
 import sys
 
-from mpd import MPDClient
+# no hints for mpd2 yet
+from mpd import MPDClient # type: ignore
+
+from typing import List
 
 MPD_HOST="/run/mpd/socket"
 
-os.chdir("/var/lib/mpd/music")
+def load() -> List[str]:
+    albums = []
 
-albums = []
-artists = []
-
-def load() -> None:
     artists = os.listdir()
-    prune = []
     for artist in artists:
         try:
             aa = os.listdir(artist)
             for album in aa:
                 albums.append(f"{artist}/{album}")
         except NotADirectoryError:
-            prune.append(artist)
+            continue
 
-    for notartist in prune:
-        artists.remove(notartist)
+    return albums
 
-def maybe_enqueue():
+def maybe_enqueue(client: MPDClient, albums: List[str]) -> None:
     status = client.status()
     if status["state"] != "stop":
         return
@@ -36,7 +34,7 @@ def maybe_enqueue():
     client.add(album)
     client.play()
 
-def current():
+def current(client: MPDClient) -> None:
     d = client.currentsong()
     disc_track = f'<fc=#4186be>{d["disc"]}-{d["track"]}</fc>'
     artist = f'<fc=#71BEBE>{d["artist"]}</fc>'
@@ -46,17 +44,19 @@ def current():
     sys.stdout.write(s)
     sys.stdout.flush()
 
-load()
+os.chdir("/var/lib/mpd/music")
+albums = load()
 client = MPDClient()
 client.connect(MPD_HOST)
 
-maybe_enqueue()
-current()
+maybe_enqueue(client, albums)
+current(client)
 
-while True:
-    events = client.idle("database", "playlist")
+while events := client.idle("database", "playlist"):
     if "database" in events:
-        load()
+        albums = load()
     if "playlist" in events:
-        maybe_enqueue()
-        current()
+        maybe_enqueue(client, albums)
+        current(client)
+
+print("Goodbye!")

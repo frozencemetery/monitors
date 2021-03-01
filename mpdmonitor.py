@@ -11,7 +11,16 @@ from typing import List
 
 MPD_HOST="/run/mpd/socket"
 
+f = open("/tmp/mpdmonitor.log", "w")
+def log(s: str) -> None:
+    f.write(s + "\n")
+    f.flush()
+
+log("Program start")
+
 def load() -> List[str]:
+    log("loading...")
+
     albums = []
 
     artists = os.listdir()
@@ -26,6 +35,8 @@ def load() -> List[str]:
     return albums
 
 def maybe_enqueue(client: MPDClient, albums: List[str]) -> None:
+    log("maybe_enqueue...")
+
     status = client.status()
     if status["state"] != "stop":
         return
@@ -35,6 +46,8 @@ def maybe_enqueue(client: MPDClient, albums: List[str]) -> None:
     client.play()
 
 def current(client: MPDClient) -> None:
+    log("current...")
+
     d = client.currentsong()
     disc_track = f'<fc=#4186be>{d["disc"]}-{d["track"]}</fc>'
     artist = f'<fc=#71BEBE>{d["artist"]}</fc>'

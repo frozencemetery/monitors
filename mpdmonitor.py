@@ -10,7 +10,7 @@ from mpd import MPDClient # type: ignore
 
 from typing import List
 
-MPD_HOST="/run/mpd/socket"
+MPD_HOST = "/run/mpd/socket"
 
 f = open("/tmp/mpdmonitor.log", "w")
 def log(s: str) -> None:

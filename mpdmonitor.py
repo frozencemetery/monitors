@@ -3,6 +3,7 @@
 import os
 import random
 import sys
+import traceback
 
 # no hints for mpd2 yet
 from mpd import MPDClient # type: ignore
@@ -57,19 +58,33 @@ def current(client: MPDClient) -> None:
     sys.stdout.write(s)
     sys.stdout.flush()
 
-os.chdir("/var/lib/mpd/music")
-albums = load()
-client = MPDClient()
-client.connect(MPD_HOST)
+if __name__ == "__main__":
+    os.chdir("/var/lib/mpd/music")
+    albums = load()
 
-maybe_enqueue(client, albums)
-current(client)
+    i = 0
+    while True:
+        log("loop!")
+        i += 1
 
-while events := client.idle("database", "playlist"):
-    if "database" in events:
-        albums = load()
-    if "playlist" in events:
-        maybe_enqueue(client, albums)
-        current(client)
+        try:
+            client = MPDClient()
+            client.connect(MPD_HOST)
 
-print("Goodbye!")
+            maybe_enqueue(client, albums)
+            current(client)
+
+            while events := client.idle("database", "playlist"):
+                if "database" in events:
+                    albums = load()
+                if "playlist" in events:
+                    maybe_enqueue(client, albums)
+                    current(client)
+
+        except ConnectionError:
+            log(f"connection died; retrying {i}")
+        except Exception:
+            log(traceback.format_exc())
+            log(f"other failure; retrying {i}")
+        else:
+            log(f"empty event list?  Hanging up {i}")

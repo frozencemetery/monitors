@@ -66,6 +66,10 @@ if __name__ == "__main__":
     while True:
         log("loop!")
         i += 1
+        if i > 20:
+            log("Too many connection failures; goodbye!")
+            print(":ded:")
+            exit(1)
 
         try:
             client = MPDClient()

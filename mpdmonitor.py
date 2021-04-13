@@ -50,11 +50,16 @@ def current(client: MPDClient) -> None:
     log("current...")
 
     d = client.currentsong()
-    disc_track = f'<fc=#4186be>{d["disc"]}-{d["track"]}</fc>'
-    artist = f'<fc=#71BEBE>{d["artist"]}</fc>'
-    title = f'<fc=#FFF796>{d["title"]}</fc>'
-    album = f'<fc=#CF6171>{d["album"]}</fc>'
-    s = f'<{disc_track}> {artist} - "{title}" [{album}]\n'
+
+    try:
+        disc_track = f'<fc=#4186be>{d["disc"]}-{d["track"]}</fc>'
+        artist = f'<fc=#71BEBE>{d["artist"]}</fc>'
+        title = f'<fc=#FFF796>{d["title"]}</fc>'
+        album = f'<fc=#CF6171>{d["album"]}</fc>'
+        s = f'<{disc_track}> {artist} - "{title}" [{album}]\n'
+    except KeyError:
+        s = f'Bad tags on: {d["file"]}\n'
+
     sys.stdout.write(s)
     sys.stdout.flush()
 

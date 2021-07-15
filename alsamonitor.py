@@ -19,6 +19,11 @@ while True:
     onoff = m.group(2)
     muted = "%" if onoff == "on" else "M"
 
+    if vol == "100":
+        vol = "FF"
+    elif len(vol) == 1:
+        vol = f"0{vol}"
+
     sys.stdout.write(f"({vol}{muted})\n")
     sys.stdout.flush()
 

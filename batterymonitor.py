@@ -59,8 +59,16 @@ assert(p.stdout) # appease mypy
 
 while True:
     if draw:
+        scolor = ""
+        px = int(pct[:-1])
+        if px <= 1:
+            scolor = "<fc=white,red>"
+        elif px <= 5:
+            scolor = "<fc=black,white>"
+        ecolor = "</fc>" if scolor else ""
+
         dttl = ttl if state != "F" else "∞"
-        sys.stdout.write(f"{pct} {state} {dttl}\n")
+        sys.stdout.write(f"{scolor}{pct} {state} {dttl}{ecolor}\n")
         sys.stdout.flush()
         draw = False
 
@@ -105,6 +113,7 @@ while True:
         oldpct = pct
         pct = m.group(1).decode("utf-8")
         draw = pct != oldpct
+
         continue
 
     m = ttlre.search(line)

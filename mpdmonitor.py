@@ -10,7 +10,7 @@ from mpd import MPDClient # type: ignore
 
 from typing import List
 
-MPD_HOST = "/run/mpd/socket"
+MPD_HOST = "~/.mpd/socket"
 
 f = open("/tmp/mpdmonitor.log", "w")
 def log(s: str) -> None:
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
         try:
             client = MPDClient()
-            client.connect(MPD_HOST)
+            client.connect(os.path.expanduser(MPD_HOST))
 
             maybe_enqueue(client, albums)
             current(client)
